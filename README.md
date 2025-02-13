@@ -54,7 +54,7 @@ python select_outputs.py --model nllb-1.3b --lp en-de --generation sample-t0.6 -
 To evaluate the quality of the produced translations use the `score_outs.py` script:
 
 ```
-python score_outs.py --model nllb-1.3b --lp en-de --cands_pool 5 --generation sample-t0.6 --criterion cometqe/cometqe-fusion-beam5-kbest0  --metrics ['bleu', 'chrf', 'comet', 'bleurt']
+python score_outs.py --model nllb-1.3b --lp en-de --cands_pool 5 --generation sample-t0.6 --criterion cometqe/cometqe-fusion-beam5-kbest0  --metrics bleu chrf comet bleurt
 ```
 
 ---
