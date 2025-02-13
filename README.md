@@ -22,8 +22,14 @@ It's advisable to set up a separate environment for this project and install the
 conda create -n qe-fusion python=3.10
 conda activate qe-fusion
 pip install -r requirements.txt
+```
+
+(for BLEURT)
+```
 git clone https://github.com/google-research/bleurt.git
-cd bleurt; pip install .; cd ..;
+cd bleurt; pip install .;
+wget https://storage.googleapis.com/bleurt-oss-21/BLEURT-20.zip .; unzip BLEURT-20.zip; 
+cd ..;
 ```
 
 ## Obtain Translation Hypotheses
