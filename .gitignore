@@ -124,3 +124,5 @@ dmypy.json
 
 # custom
 hf_models
+*.egg-info
+bleurt/build
