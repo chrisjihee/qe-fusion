@@ -27,6 +27,11 @@ pip install -r requirements.txt
 ## Obtain Translation Hypotheses
 
 The script assumes that the test set of each language pair (can be downloaded from [sacreBLEU](https://github.com/mjpost/sacrebleu)) is located in the folder `data/<s>-<t>/` under the names `test.<s>` and `test.<t>` where `<s>` and `<t>` are the source and target languages.
+```
+mkdir -p data/en-de
+sacrebleu -t wmt14 -l en-de --echo src > data/en-de/test.en
+sacrebleu -t wmt14 -l en-de --echo ref > data/en-de/test.de 
+```
 
 The first step is to obtain multiple translation hypotheses for each input. To do so, we either use an LLM via few-shot (8-shot) learning or an MT model from which we sample *k* outputs using the `llm_query.py` script.
 
