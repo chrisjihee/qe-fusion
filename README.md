@@ -36,7 +36,7 @@ sacrebleu -t wmt14 -l en-de --echo ref > data/en-de/test.de
 The first step is to obtain multiple translation hypotheses for each input. To do so, we either use an LLM via few-shot (8-shot) learning or an MT model from which we sample *k* outputs using the `llm_query.py` script.
 
 ```
-python llm_query.py --model llama2-7b --lp en-de --bsize 4 --decoding_alg sample --sample 5 --temperature 0.6 --exemplars 8 
+python llm_query.py --model nllb-1.3b --lp en-de --bsize 4 --decoding_alg sample --sample 5 --temperature 0.6 --exemplars 8 
 ```
 > This script also supports greedy decoding and beam search via the `decoding_alg` parameter.
 
@@ -45,7 +45,7 @@ python llm_query.py --model llama2-7b --lp en-de --bsize 4 --decoding_alg sample
 To fuse the generated hypotheses use the `select_outputs.py` script:
 
 ```
-python select_outputs.py --model llama2-7b --lp en-de --generation sample-t0.6 --cands_pool 5 --criterion cometqe --method fusion 
+python select_outputs.py --model nllb-1.3b --lp en-de --generation sample-t0.6 --cands_pool 5 --criterion cometqe --method fusion 
 ```
 > To implement reranking approaches such as QE-reranking and MBR modify the `--criterion` and `--method` parameters accordingly.
 
@@ -54,7 +54,7 @@ python select_outputs.py --model llama2-7b --lp en-de --generation sample-t0.6 -
 To evaluate the quality of the produced translations use the `score_outs.py` script:
 
 ```
-python score_outs.py --model llama2-7b --lp en-de --cands_pool 5 --generation sample-t0.6 --criterion cometqe/cometqe-fusion-beam5-kbest0  --metrics ['bleu', 'chrf', 'comet', 'bleurt']
+python score_outs.py --model nllb-1.3b --lp en-de --cands_pool 5 --generation sample-t0.6 --criterion cometqe/cometqe-fusion-beam5-kbest0  --metrics ['bleu', 'chrf', 'comet', 'bleurt']
 ```
 
 ---
