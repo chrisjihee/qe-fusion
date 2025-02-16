@@ -8,6 +8,11 @@ from llm_inference_utils import sample_llm, mt_prompts
 
 model_dict = {'polylm-1.7b': 'DAMO-NLP-MT/polylm-1.7b',
               'xglm-2.9b': 'facebook/xglm-2.9B',
+              'flan-t5-base': 'google/flan-t5-base',
+              'flan-t5-large': 'google/flan-t5-large',
+              'flan-t5-xl': 'google/flan-t5-xl',
+              'llama3-1b': 'meta-llama/Llama-3.2-1B',
+              'llama3-3b': 'meta-llama/Llama-3.2-3B',
               'llama2-7b': 'meta-llama/Llama-2-7b-hf',
               'llama2-13b': 'meta-llama/Llama-2-13b-hf',
               'mistral': 'mistralai/Mistral-7B-v0.1',
@@ -62,7 +67,7 @@ def main(args):
         tokenizer.padding_side = "left"
     elif 'xglm' in args.model:
         tokenizer.padding_side = "left"
-    num_sequences = args.sample if args.decoding_alg != 'greedy' else 1
+    num_sequences = 1 if args.decoding_alg == 'greedy' else args.sample
 
     device = f"cuda:{args.cuda}" if torch.cuda.is_available() else "cpu"
     model = model.to(device)
@@ -70,7 +75,7 @@ def main(args):
         args.model, args.split, args.model,
         args.decoding_alg if args.decoding_alg != 'sample' else
         args.decoding_alg + "-t{}".format(args.temperature),
-        num_sequences,
+        f"beam{args.num_beams}_gen{num_sequences}",
     )
     print("Saving to {}".format(output_filename))
 
@@ -92,7 +97,7 @@ def main(args):
     print("Sampling from the model with temperature {}".format(args.temperature))
 
     sample_llm(source_data=source_data, tokenizer=tokenizer, model=model, device=device, batch_size=args.bsize,
-               decode_algo=args.decoding_alg, num_sequences=num_sequences,
+               decode_algo=args.decoding_alg, num_beams=args.num_beams, num_sequences=num_sequences,
                gen_filename=output_filename, temperature=args.temperature,
                lang_id=lang_id if 'nllb' in args.model else None)
 
@@ -100,6 +105,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Query the LLM for a specific task.')
     parser.add_argument('--cuda', type=int, default=0, help="index of the cuda device to use")
+    parser.add_argument('--num_beams', type=int, default=5, help="the number of beams for beam search")
     parser.add_argument('--model', type=str,
                         choices=['polylm-1.7b', 'xglm-2.9b', 'llama2-7b', 'llama2-13b', 'mistral',
                                  'alma-7b', 'alma-13b', 'tower', 'nllb-1.3b', 'nllb-3.3b'],

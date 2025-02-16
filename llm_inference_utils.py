@@ -28,7 +28,7 @@ class LLMTask:
 
 
 def sample_llm(source_data: list[str], tokenizer: transformers.models, model: transformers.models, device: str,
-               batch_size: int, decode_algo: str, num_sequences: int, gen_filename: str, temperature: float = 0.6,
+               batch_size: int, decode_algo: str, num_beams: int, num_sequences: int, gen_filename: str, temperature: float = 0.6,
                topp: float = 0.9, max_tokens: int = 200, lang_id: int = None):
     for i in tqdm(range(0, len(source_data), batch_size)):
         source_batch = source_data[i:i + batch_size]
@@ -37,30 +37,34 @@ def sample_llm(source_data: list[str], tokenizer: transformers.models, model: tr
             with torch.no_grad():
                 if lang_id:
                     gen_tokens = model.generate(**inputs, do_sample=False, max_new_tokens=max_tokens,
-                                                forced_bos_token_id=lang_id, num_beams=1)
+                                                num_return_sequences=1, num_beams=1,
+                                                forced_bos_token_id=lang_id)
                 else:
-                    gen_tokens = model.generate(**inputs, do_sample=False, max_new_tokens=max_tokens, )
+                    gen_tokens = model.generate(**inputs, do_sample=False, max_new_tokens=max_tokens,
+                                                num_return_sequences=1, num_beams=1,
+                                                )
         elif decode_algo == 'beam':
             with torch.no_grad():
                 if lang_id:
                     gen_tokens = model.generate(**inputs, do_sample=False, max_new_tokens=max_tokens,
-                                                num_return_sequences=num_sequences,
-                                                forced_bos_token_id=lang_id, num_beams=5)
+                                                num_return_sequences=num_sequences, num_beams=num_beams,
+                                                forced_bos_token_id=lang_id)
                 else:
                     gen_tokens = model.generate(**inputs, do_sample=False, max_new_tokens=max_tokens,
-                                                num_return_sequences=num_sequences,
-                                                num_beams=5, )
+                                                num_return_sequences=num_sequences, num_beams=num_beams,
+                                                )
         else:
             with torch.no_grad():
                 if lang_id:
                     gen_tokens = model.generate(**inputs, do_sample=True, max_new_tokens=max_tokens,
-                                                num_return_sequences=num_sequences,
+                                                num_return_sequences=num_sequences, num_beams=num_beams,
                                                 temperature=temperature, epsilon_cutoff=0.02,
-                                                forced_bos_token_id=lang_id, num_beams=1)
+                                                forced_bos_token_id=lang_id)
                 else:
                     gen_tokens = model.generate(**inputs, do_sample=True, max_new_tokens=max_tokens,
-                                                num_return_sequences=num_sequences,
-                                                temperature=temperature, top_p=topp)
+                                                num_return_sequences=num_sequences, num_beams=num_beams,
+                                                temperature=temperature, top_p=topp,
+                                                )
         gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
         answers = [text.split(source_batch[j // num_sequences])[-1].split("\n")[0].strip() for j, text in
                    enumerate(gen_text)]
