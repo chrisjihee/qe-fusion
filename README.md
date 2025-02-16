@@ -44,7 +44,10 @@ sacrebleu -t wmt14 -l en-de --echo ref > data/en-de/test.de
 The first step is to obtain multiple translation hypotheses for each input. To do so, we either use an LLM via few-shot (8-shot) learning or an MT model from which we sample *k* outputs using the `llm_query.py` script.
 
 ```
-python llm_query.py --model nllb-1.3b --lp en-de --bsize 4 --decoding_alg sample --sample 5 --temperature 0.6 --exemplars 8
+python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg sample --sample 5 --temperature 0.6
+python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg greedy
+python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg beam --sample 1
+python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg beam --sample 5
 ```
 > This script also supports greedy decoding and beam search via the `decoding_alg` parameter.
 
