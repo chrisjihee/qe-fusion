@@ -43,19 +43,24 @@ def sample_llm(source_data: list[str], tokenizer: transformers.models, model: tr
         elif decode_algo == 'beam':
             with torch.no_grad():
                 if lang_id:
-                    gen_tokens = model.generate(**inputs, do_sample=False, num_beams=5, max_new_tokens=max_tokens,
-                                                forced_bos_token_id=lang_id)
+                    gen_tokens = model.generate(**inputs, do_sample=False, max_new_tokens=max_tokens,
+                                                num_return_sequences=num_sequences,
+                                                forced_bos_token_id=lang_id, num_beams=5)
                 else:
-                    gen_tokens = model.generate(**inputs, do_sample=False, num_beams=5, max_new_tokens=max_tokens)
+                    gen_tokens = model.generate(**inputs, do_sample=False, max_new_tokens=max_tokens,
+                                                num_return_sequences=num_sequences,
+                                                num_beams=5, )
         else:
             with torch.no_grad():
                 if lang_id:
-                    gen_tokens = model.generate(**inputs, do_sample=True, epsilon_cutoff=0.02, temperature=temperature,
-                                                max_new_tokens=max_tokens, num_return_sequences=num_sequences,
+                    gen_tokens = model.generate(**inputs, do_sample=True, max_new_tokens=max_tokens,
+                                                num_return_sequences=num_sequences,
+                                                temperature=temperature, epsilon_cutoff=0.02,
                                                 forced_bos_token_id=lang_id, num_beams=1)
                 else:
                     gen_tokens = model.generate(**inputs, do_sample=True, max_new_tokens=max_tokens,
-                                                num_return_sequences=num_sequences, temperature=temperature, top_p=topp)
+                                                num_return_sequences=num_sequences,
+                                                temperature=temperature, top_p=topp)
         gen_text = tokenizer.batch_decode(gen_tokens, skip_special_tokens=True)
         answers = [text.split(source_batch[j // num_sequences])[-1].split("\n")[0].strip() for j, text in
                    enumerate(gen_text)]
