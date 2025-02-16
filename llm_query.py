@@ -64,13 +64,15 @@ def main(args):
         tokenizer.padding_side = "left"
     elif 'xglm' in args.model:
         tokenizer.padding_side = "left"
-    num_sequences = args.sample if args.decoding_alg == 'sample' else 1
+    num_sequences = args.sample if args.decoding_alg != 'greedy' else 1
 
     model = model.to(device)
-    output_filename = data_path + '/{}/{}_{}_{}_{}.txt'.format(args.model, args.split, args.model,
-                                                               args.decoding_alg + "-t{}".format(
-                                                                   args.temperature) if args.decoding_alg == 'sample' else args.decoding_alg,
-                                                               num_sequences)
+    output_filename = data_path + '/{}/{}_{}_{}_{}.txt'.format(
+        args.model, args.split, args.model,
+        args.decoding_alg if args.decoding_alg != 'sample' else
+        args.decoding_alg + "-t{}".format(args.temperature),
+        num_sequences,
+    )
     print("Saving to {}".format(output_filename))
 
     if args.suffix:
