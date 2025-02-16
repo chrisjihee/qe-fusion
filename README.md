@@ -47,7 +47,7 @@ The first step is to obtain multiple translation hypotheses for each input. To d
 python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg sample --sample 5 --temperature 0.6
 python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg greedy
 python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg beam --sample 1
-python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg beam --sample 5
+python llm_query.py --model nllb-1.3b --lp en-de --exemplars 8 --bsize 4 --decoding_alg beam --sample 5 --cuda 1
 ```
 > This script also supports greedy decoding and beam search via the `decoding_alg` parameter.
 
