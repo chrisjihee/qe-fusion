@@ -6,8 +6,6 @@ from peft import PeftModel
 from io_utils import read_textfile, MODELS_DIR, FILE_PATH
 from llm_inference_utils import sample_llm, mt_prompts
 
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
-
 model_dict = {'polylm-1.7b': 'DAMO-NLP-MT/polylm-1.7b',
               'xglm-2.9b': 'facebook/xglm-2.9B',
               'llama2-7b': 'meta-llama/Llama-2-7b-hf',
@@ -66,6 +64,7 @@ def main(args):
         tokenizer.padding_side = "left"
     num_sequences = args.sample if args.decoding_alg != 'greedy' else 1
 
+    device = f"cuda:{args.cuda}" if torch.cuda.is_available() else "cpu"
     model = model.to(device)
     output_filename = data_path + '/{}/{}_{}_{}_{}.txt'.format(
         args.model, args.split, args.model,
@@ -100,6 +99,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Query the LLM for a specific task.')
+    parser.add_argument('--cuda', type=int, default=0, help="index of the cuda device to use")
     parser.add_argument('--model', type=str,
                         choices=['polylm-1.7b', 'xglm-2.9b', 'llama2-7b', 'llama2-13b', 'mistral',
                                  'alma-7b', 'alma-13b', 'tower', 'nllb-1.3b', 'nllb-3.3b'],
